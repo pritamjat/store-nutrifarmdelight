@@ -1,7 +1,22 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
 export default function HomePage() {
-  const isLoggedIn = false; // later replace with auth check
+  const cookieStore = cookies();
+  const token = cookieStore.get("token")?.value;
+
+  let user = null;
+
+  if (token) {
+    try {
+      user = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      user = null;
+    }
+  }
+
+  const isLoggedIn = !!user;
 
   return (
     <div className="home">
@@ -24,8 +39,10 @@ export default function HomePage() {
             </>
           ) : (
             <>
-              <Link href="/profile">Profile</Link>
-              <Link href="/cart">Cart 🛒</Link>
+              <span style={{ color: "white", marginRight: "10px" }}>
+                👤 {user.name}
+              </span>
+              <Link href="/cart" className="btn">Cart 🛒</Link>
             </>
           )}
         </div>
