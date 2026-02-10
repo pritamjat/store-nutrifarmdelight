@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { verifyToken } from '@/lib/auth';
-import LogoutButton from './logout-button';
+import Storefront from './storefront';
 
 export default async function DashboardPage() {
   const token = cookies().get('auth_token')?.value;
@@ -13,16 +13,7 @@ export default async function DashboardPage() {
   try {
     const payload = await verifyToken(token);
 
-    return (
-      <main>
-        <section className="card">
-          <h1>Dashboard</h1>
-          <p>Welcome back, {payload.name}.</p>
-          <p>Email: {payload.email}</p>
-          <LogoutButton />
-        </section>
-      </main>
-    );
+    return <Storefront user={{ name: payload.name, email: payload.email }} />;
   } catch (error) {
     redirect('/login');
   }
