@@ -1,15 +1,24 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { jwtVerify } from "jose";
 
-export function middleware(request) {
-  const token = request.cookies.get('auth_token')?.value;
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
-  if (!token && request.nextUrl.pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/login', request.url));
+export async function middleware(request) {
+  const token = request.cookies.get("auth_token")?.value;
+
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  return NextResponse.next();
+  try {
+    await jwtVerify(token, secret);
+    return NextResponse.next();
+  } catch {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*']
+  matcher: ["/cart/:path*", "/dashboard/:path*", "/profile/:path*"],
 };
+
