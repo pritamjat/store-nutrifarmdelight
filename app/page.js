@@ -6,6 +6,15 @@ export default async function HomePage() {
   const cookieStore = cookies();
   const token = cookieStore.get("auth_token")?.value;
 
+  async function handleAdd(product) {
+  await fetch("/api/cart/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ product }),
+  });
+}
+
+
   let user = null;
 
   if (token) {
@@ -34,7 +43,13 @@ export default async function HomePage() {
               <div className="image-placeholder"></div>
               <h3>Organic Product {item}</h3>
               <p>₹299</p>
-              <button>Add to Cart</button>
+              <button onClick={()=>
+                  handleAdd({
+                   productId:item,
+                   name:`Organic Product${item}`,
+                   price: 299})
+                 }
+                 >Add to Cart</button>
             </div>
           ))}
         </div>
