@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export default function HomePage() {
   const cookieStore = cookies();
-  const token = cookieStore.get("token")?.value;
+  const token = cookieStore.get("auth_token")?.value;
 
   let user = null;
 
