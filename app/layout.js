@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'NutriFarm Delight Store',
-  description: 'NutriFarm Delight eCommerce app with products, cart, checkout, and Razorpay flow.'
+  title: 'NutriFarm Delight Auth',
+  description: 'Next.js and MongoDB authentication example'
 };
 
 export default function RootLayout({ children }) {
