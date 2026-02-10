@@ -2,6 +2,8 @@ import "./globals.css";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
+import ProfileDropdown from "@/app/components/ProfileDropdown";
+
 
 export default async function RootLayout({ children }) {
   const cookieStore = cookies();
@@ -43,11 +45,9 @@ export default async function RootLayout({ children }) {
               </>
             ) : (
               <>
-                <span style={{ marginRight: "10px" }}>
-                  👤 {user.name}
-                </span>
-                <Link href="/cart" className="btn">
-                  Cart 🛒
+               <ProfileDropdown name={user.name} />
+               <Link href="/cart" className="btn">
+                Cart 🛒
                 </Link>
               </>
             )}
