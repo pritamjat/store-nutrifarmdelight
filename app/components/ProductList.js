@@ -23,6 +23,7 @@ export default function ProductList() {
     });
 
     router.refresh();
+    router.replace("/");
     setAddedId(product._id);
 
     setTimeout(() => {
