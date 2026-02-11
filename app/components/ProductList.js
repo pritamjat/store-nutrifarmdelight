@@ -1,6 +1,15 @@
-"use client";
+]"use client";
+
+import { useEffect, useState } from "react";
 
 export default function ProductList() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then(res => res.json())
+      .then(data => setProducts(data.products || []));
+  }, []);
 
   async function handleAdd(product) {
     await fetch("/api/cart/add", {
@@ -14,20 +23,12 @@ export default function ProductList() {
     <section className="products">
       <h2>Trending Products</h2>
       <div className="grid">
-        {[1,2,3,4].map((item) => (
-          <div key={item} className="product-card">
-            <div className="image-placeholder"></div>
-            <h3>Organic Product {item}</h3>
-            <p>₹299</p>
-            <button
-              onClick={() =>
-                handleAdd({
-                  productId: item,
-                  name: `Organic Product ${item}`,
-                  price: 299
-                })
-              }
-            >
+        {products.map((product) => (
+          <div key={product._id} className="product-card">
+            <img src={product.image} width="150" />
+            <h3>{product.name}</h3>
+            <p>₹{product.price}</p>
+            <button onClick={() => handleAdd(product)}>
               Add to Cart
             </button>
           </div>
@@ -36,4 +37,3 @@ export default function ProductList() {
     </section>
   );
 }
-
