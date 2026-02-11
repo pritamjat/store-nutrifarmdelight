@@ -17,20 +17,13 @@ export default function ProductList() {
   }, []);
 
   async function handleAdd(product) {
-    await fetch("/api/cart/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        product: {
-          productId: product._id,
-          name: product.name,
-          price: product.price,
-        },
-      }),
-    });
+  await fetch("/api/cart/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ product }),
+  });
+}
 
-    alert("Added to cart");
-  }
 
   return (
     <section className="products">
