@@ -15,7 +15,9 @@ export async function POST(request) {
 
     const user = await verifyToken(token);
 
-    // Optional: add role check later (admin only)
+    if (user.role !== "admin") {
+  return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+}
 
     const { name, price, description, image, stock } = await request.json();
 
