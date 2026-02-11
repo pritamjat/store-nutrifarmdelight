@@ -11,7 +11,15 @@ export async function middleware(request) {
   }
 
   try {
-    await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret);
+
+    const pathname = request.nextUrl.pathname;
+
+    // Admin route protection
+    if (pathname.startsWith("/admin") && payload.role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
     return NextResponse.next();
   } catch {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -19,6 +27,10 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/cart/:path*", "/dashboard/:path*", "/profile/:path*"],
+  matcher: [
+    "/cart/:path*",
+    "/dashboard/:path*",
+    "/profile/:path*",
+    "/admin/:path*"   // 👈 Protect admin routes
+  ],
 };
-
