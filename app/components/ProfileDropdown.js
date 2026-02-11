@@ -9,8 +9,8 @@ export default function ProfileDropdown({ name }) {
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
-    router.refresh();
     router.push("/");
+     router.refresh();
   }
 
   return (
