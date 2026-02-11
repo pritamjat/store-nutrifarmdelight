@@ -5,6 +5,8 @@ import { verifyToken } from "@/lib/auth";
 import ProfileDropdown from "@/app/components/ProfileDropdown";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { CartProvider } from "@/app/context/CartContext";
+
 
 
 
@@ -47,54 +49,39 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body>
-        <header className="navbar">
-          <div className="logo">
-            <Link href="/">NutriFarm</Link>
-          </div>
+    <body>
+  <CartProvider initialCount={cartCount}>
+    <header className="navbar">
+      <div className="logo">
+        <Link href="/">NutriFarm</Link>
+      </div>
 
-          <div className="search">
-            <input type="text" placeholder="Search products..." />
-          </div>
+      <div className="search">
+        <input type="text" placeholder="Search products..." />
+      </div>
 
-          <div className="nav-right">
-            {!isLoggedIn ? (
-              <>
-                <Link href="/login" className="btn">Login</Link>
-                <Link href="/register" className="btn primary">
-                  Create Account
-                </Link>
-              </>
-            ) : (
-              <>
-                <ProfileDropdown name={user.name} />
+      <div className="nav-right">
+        {!isLoggedIn ? (
+          <>
+            <Link href="/login" className="btn">Login</Link>
+            <Link href="/register" className="btn primary">
+              Create Account
+            </Link>
+          </>
+        ) : (
+          <>
+            <ProfileDropdown name={user.name} />
+            <CartIcon />
+          </>
+        )}
+      </div>
+    </header>
 
-                <Link href="/cart" style={{ position: "relative" }}>
-                  🛒
-                  {cartCount > 0 && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: "-8px",
-                        right: "-10px",
-                        background: "red",
-                        color: "white",
-                        borderRadius: "50%",
-                        padding: "3px 7px",
-                        fontSize: "12px",
-                      }}
-                    >
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
-              </>
-            )}
-          </div>
-        </header>
+    {children}
+  </CartProvider>
+</body>
 
-        {children}
-      </body>
+      
     </html>
   );
 }
