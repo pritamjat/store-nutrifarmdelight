@@ -25,10 +25,12 @@ export async function POST(request) {
     }
 
     const token = await createToken({
-      sub: user._id.toString(),
-      name: user.name,
-      email: user.email
-    });
+   sub: user._id.toString(),
+   name: user.name,
+   email: user.email,
+   role: user.role 
+   });
+
 
     const response = NextResponse.json({ message: 'Login successful.' });
     response.cookies.set('auth_token', token, {
