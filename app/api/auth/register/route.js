@@ -24,11 +24,14 @@ export async function POST(request) {
 
     const hashedPassword = await hashPassword(password);
     await users.insertOne({
-      name,
-      email: email.toLowerCase(),
-      password: hashedPassword,
-      createdAt: new Date()
-    });
+  name,
+  email: email.toLowerCase(),
+  password: hashedPassword,
+  role: "user",  
+  cart: [],
+  createdAt: new Date()
+});
+
 
     return NextResponse.json({ message: 'User registered successfully.' }, { status: 201 });
   } catch (error) {
