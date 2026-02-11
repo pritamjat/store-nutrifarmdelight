@@ -6,6 +6,8 @@ import ProfileDropdown from "@/app/components/ProfileDropdown";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { CartProvider } from "@/app/context/CartContext";
+import CartIcon from "@/app/components/CartIcon";
+
 
 
 
