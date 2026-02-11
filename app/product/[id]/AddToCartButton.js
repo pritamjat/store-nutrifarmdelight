@@ -14,8 +14,9 @@ export default function AddToCartButton({ product }) {
       body: JSON.stringify({ product }),
     });
 
-    setAdded(true);
     router.refresh(); // update navbar badge
+
+    setAdded(true);
 
     setTimeout(() => {
       setAdded(false);
@@ -23,8 +24,17 @@ export default function AddToCartButton({ product }) {
   }
 
   return (
-    <div>
-      <button onClick={handleAdd}>
+    <div style={{ marginTop: "20px" }}>
+      <button
+        onClick={handleAdd}
+        style={{
+          padding: "10px 20px",
+          background: "green",
+          color: "white",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
         Add to Cart
       </button>
 
