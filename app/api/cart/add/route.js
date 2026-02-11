@@ -14,29 +14,50 @@ export async function POST(request) {
     }
 
     const userData = await verifyToken(token);
-
     const { product } = await request.json();
 
     const client = await clientPromise;
     const db = client.db();
     const users = db.collection("users");
 
-    await users.updateOne(
-      { _id: new ObjectId(userData.sub) },
-      {
-        $push: {
-          cart: {
-            ...product,
-            quantity: 1
-          }
-        }
-      }
+    const user = await users.findOne({
+      _id: new ObjectId(userData.sub),
+    });
+
+    const existingItem = user.cart?.find(
+      (item) => item.productId === product.productId
     );
 
-    return NextResponse.json({ message: "Added to cart" });
+    if (existingItem) {
+      // Increase quantity
+      await users.updateOne(
+        {
+          _id: new ObjectId(userData.sub),
+          "cart.productId": product.productId,
+        },
+        {
+          $inc: { "cart.$.quantity": 1 },
+        }
+      );
+    } else {
+      // Add new item
+      await users.updateOne(
+        { _id: new ObjectId(userData.sub) },
+        {
+          $push: {
+            cart: {
+              productId: product.productId,
+              name: product.name,
+              price: product.price,
+              quantity: 1,
+            },
+          },
+        }
+      );
+    }
 
+    return NextResponse.json({ message: "Cart updated" });
   } catch (error) {
     return NextResponse.json({ message: "Error adding to cart" }, { status: 500 });
   }
 }
-
