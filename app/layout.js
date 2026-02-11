@@ -3,6 +3,9 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
 import ProfileDropdown from "@/app/components/ProfileDropdown";
+import clientPromise from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
+
 
 
 export default async function RootLayout({ children }) {
@@ -10,6 +13,27 @@ export default async function RootLayout({ children }) {
   const token = cookieStore.get("auth_token")?.value;
 
   let user = null;
+  
+  let cartCount = 0;
+
+if (user) {
+  const client = await clientPromise;
+  const db = client.db();
+  const users = db.collection("users");
+
+  const dbUser = await users.findOne(
+    { _id: new ObjectId(user.sub) },
+    { projection: { cart: 1 } }
+  );
+
+  if (dbUser?.cart) {
+    cartCount = dbUser.cart.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+  }
+}
+
 
   if (token) {
     try {
@@ -45,10 +69,26 @@ export default async function RootLayout({ children }) {
               </>
             ) : (
               <>
-               <ProfileDropdown name={user.name} />
-               <Link href="/cart" className="btn">
-                Cart 🛒
-                </Link>
+               <Link href="/cart" style={{ position: "relative" }}>
+                         🛒
+               {cartCount > 0 && (
+               <span
+               style={{
+                position: "absolute",
+                top: "-8px",
+               right: "-10px",
+               background: "red",
+               color: "white",
+               borderRadius: "50%",
+              padding: "3px 7px",
+             fontSize: "12px",
+           }}
+           >
+             {cartCount}
+              </span>
+       )}
+       </Link>
+
               </>
             )}
           </div>
