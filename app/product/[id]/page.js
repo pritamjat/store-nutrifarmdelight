@@ -1,6 +1,8 @@
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { notFound } from "next/navigation";
+import AddToCartButton from "./AddToCartButton";
+
 
 export default async function ProductPage({ params }) {
   const client = await clientPromise;
