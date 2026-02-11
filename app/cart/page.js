@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 
 export default function CartPage() {
   const [cart, setCart] = useState([]);
+
+  const router = useRouter();
 
   async function fetchCart() {
     const res = await fetch("/api/cart");
@@ -16,24 +20,31 @@ export default function CartPage() {
   }, []);
 
   async function updateQuantity(productId, action) {
-    await fetch("/api/cart/update", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId, action }),
-    });
+  await fetch("/api/cart/update", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productId, action }),
+  });
 
-    fetchCart();
-  }
+  await fetchCart();
+  router.refresh(); // 👈 THIS updates navbar badge
+}
+
 
   async function removeItem(productId) {
-    await fetch("/api/cart/remove", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId }),
-    });
+  await fetch("/api/cart/remove", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productId }),
+  });
 
-    fetchCart();
-  }
+  await fetchCart();
+  router.refresh(); // 👈 THIS updates navbar badge
+}
+
+
+
+
 
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
