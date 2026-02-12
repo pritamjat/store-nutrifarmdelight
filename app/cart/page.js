@@ -9,6 +9,15 @@ import { useCart } from "@/app/context/CartContext";
 export default function CartPage() {
   const [cart, setCart] = useState([]);
   const { setCartCount } = useCart();
+  const [address, setAddress] = useState({
+  fullName: "",
+  phone: "",
+  line1: "",
+  city: "",
+  state: "",
+  pincode: "",
+});
+
 
 
   const router = useRouter();
@@ -138,6 +147,52 @@ async function handleCheckout() {
 
       <hr />
       <h3>Total: ₹{total}</h3>
+        <div style={{ marginTop: "20px" }}>
+  <h3>Delivery Address</h3>
+
+  <input
+    type="text"
+    placeholder="Full Name"
+    value={address.fullName}
+    onChange={(e) => setAddress({ ...address, fullName: e.target.value })}
+  />
+
+  <input
+    type="text"
+    placeholder="Phone"
+    value={address.phone}
+    onChange={(e) => setAddress({ ...address, phone: e.target.value })}
+  />
+
+  <input
+    type="text"
+    placeholder="Address Line"
+    value={address.line1}
+    onChange={(e) => setAddress({ ...address, line1: e.target.value })}
+  />
+
+  <input
+    type="text"
+    placeholder="City"
+    value={address.city}
+    onChange={(e) => setAddress({ ...address, city: e.target.value })}
+  />
+
+  <input
+    type="text"
+    placeholder="State"
+    value={address.state}
+    onChange={(e) => setAddress({ ...address, state: e.target.value })}
+  />
+
+  <input
+    type="text"
+    placeholder="Pincode"
+    value={address.pincode}
+    onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
+  />
+</div>
+
         <button
   onClick={handleCheckout}
   style={{
