@@ -18,9 +18,24 @@ export async function POST(request) {
 
     const productId = product.productId.toString(); // 🔥 FORCE STRING
 
+   
+
     const client = await clientPromise;
     const db = client.db();
     const users = db.collection("users");
+     //fetch product to update out of stock or not 
+    const products = db.collection("products");
+
+    const dbProduct = await products.findOne({
+      _id: new ObjectId(productId),
+});
+
+    if (!dbProduct || dbProduct.stock <= 0) {
+     return NextResponse.json(
+    { message: "Out of stock" },
+    { status: 400 }
+  );
+}
 
     const user = await users.findOne({
       _id: new ObjectId(userData.sub),
