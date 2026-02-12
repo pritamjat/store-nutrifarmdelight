@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useCart } from "@/app/context/CartContext";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [addedId, setAddedId] = useState(null);
-  const router = useRouter();
+
+  const { cartCount, setCartCount } = useCart();
 
   useEffect(() => {
     fetch("/api/products")
@@ -22,8 +23,9 @@ export default function ProductList() {
       body: JSON.stringify({ product }),
     });
 
-    router.refresh();
-    router.replace("/");
+    // 🔥 Update badge instantly
+    setCartCount(cartCount + 1);
+
     setAddedId(product._id);
 
     setTimeout(() => {
@@ -34,6 +36,7 @@ export default function ProductList() {
   return (
     <section className="products">
       <h2>Trending Products</h2>
+
       <div className="grid">
         {products.map((product) => (
           <div key={product._id} className="product-card">
