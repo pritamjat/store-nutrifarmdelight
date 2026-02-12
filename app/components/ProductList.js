@@ -22,11 +22,7 @@ export default function ProductList() {
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({
-     product: {
     productId: product._id,
-    name: product.name,
-    price: product.price,
-  },
 }),
 
     });
