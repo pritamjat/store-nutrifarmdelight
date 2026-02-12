@@ -7,34 +7,51 @@ import { useCart } from "@/app/context/CartContext";
 export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [addedId, setAddedId] = useState(null);
+  const [loadingId, setLoadingId] = useState(null);
 
   const { cartCount, setCartCount } = useCart();
 
   useEffect(() => {
     fetch("/api/products")
-      .then(res => res.json())
-      .then(data => setProducts(data.products || []));
+      .then((res) => res.json())
+      .then((data) => setProducts(data.products || []));
   }, []);
 
   async function handleAdd(product) {
-    await fetch("/api/cart/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-    productId: product._id
-}),
-       
-    });
+    try {
+      setLoadingId(product._id);
 
-    // 🔥 Update badge instantly
-    setCartCount(cartCount + 1);
+      const res = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          productId: product._id,
+        }),
+      });
 
-    setAddedId(product._id);
+      const data = await res.json();
 
-    setTimeout(() => {
-      setAddedId(null);
-    }, 1500);
+      if (!res.ok) {
+        alert(data.message || "Failed to add to cart");
+        setLoadingId(null);
+        return;
+      }
+
+      // 🔥 Only increase badge if backend succeeded
+      setCartCount(cartCount + 1);
+
+      setAddedId(product._id);
+
+      setTimeout(() => {
+        setAddedId(null);
+      }, 1500);
+
+    } catch (error) {
+      alert("Something went wrong");
+    } finally {
+      setLoadingId(null);
+    }
   }
 
   return (
@@ -51,8 +68,11 @@ export default function ProductList() {
 
             <p>₹{product.price}</p>
 
-            <button onClick={() => handleAdd(product)}>
-              Add to Cart
+            <button
+              onClick={() => handleAdd(product)}
+              disabled={loadingId === product._id}
+            >
+              {loadingId === product._id ? "Adding..." : "Add to Cart"}
             </button>
 
             {addedId === product._id && (
