@@ -2,18 +2,32 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/app/context/CartContext";
+
 
 
 export default function CartPage() {
   const [cart, setCart] = useState([]);
+  const { setCartCount } = useCart();
+
 
   const router = useRouter();
 
   async function fetchCart() {
-    const res = await fetch("/api/cart");
-    const data = await res.json();
-    setCart(data.cart || []);
-  }
+  const res = await fetch("/api/cart");
+  const data = await res.json();
+  const cartItems = data.cart || [];
+
+  setCart(cartItems);
+
+  // 🔥 Update badge count
+  const totalQty = cartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
+  setCartCount(totalQty);
+}
 
   useEffect(() => {
     fetchCart();
