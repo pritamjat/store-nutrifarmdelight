@@ -27,7 +27,7 @@ export async function POST(request) {
 
   const orders = db.collection("orders");
   const users = db.collection("users");
-  const products = db.collection("products"); // 🔥 ADD THIS
+  const products = db.collection("products");
 
   const order = await orders.findOne({ razorpayOrderId });
 
@@ -35,13 +35,7 @@ export async function POST(request) {
     return NextResponse.json({ status: "already processed" });
   }
 
-  // 🔥 1️⃣ Update order status
-  await orders.updateOne(
-    { _id: order._id },
-    { $set: { status: "paid" } }
-  );
-
-   // 🔥 2️⃣ Deduct stock safely (atomic protection)
+  // 🔥 1️⃣ Deduct stock first (atomic)
   for (const item of order.items) {
     const result = await products.updateOne(
       {
@@ -63,12 +57,19 @@ export async function POST(request) {
     }
   }
 
+  // 🔥 2️⃣ Now mark order paid
+  await orders.updateOne(
+    { _id: order._id },
+    { $set: { status: "paid" } }
+  );
+
   // 🔥 3️⃣ Clear cart
   await users.updateOne(
     { _id: new ObjectId(order.userId) },
     { $set: { cart: [] } }
   );
 }
+
 
     return NextResponse.json({ status: "ok" });
 
