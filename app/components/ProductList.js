@@ -20,7 +20,14 @@ export default function ProductList() {
     await fetch("/api/cart/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ product }),
+      body: JSON.stringify({
+     product: {
+    productId: product._id,
+    name: product.name,
+    price: product.price,
+  },
+}),
+
     });
 
     // 🔥 Update badge instantly
