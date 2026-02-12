@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 
 export default function ProfileDropdown({ name }) {
   const [open, setOpen] = useState(false);
@@ -49,9 +51,12 @@ export default function ProfileDropdown({ name }) {
           <div style={itemStyle} onClick={() => router.push("/dashboard")}>
             Dashboard
           </div>
-             <Link href="/profile/address">
-            My Address
-             </Link> 
+             <div style={itemStyle}>
+  <Link href="/profile/address" style={{ textDecoration: "none", color: "black" }}>
+    My Address
+  </Link>
+</div>
+
           <hr />
           <div
             style={{ ...itemStyle, color: "red" }}
