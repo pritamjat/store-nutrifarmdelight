@@ -24,12 +24,7 @@ export default function ProductList() {
       body: JSON.stringify({
     productId: product._id
 }),
-        const data = await res.json();
-
-if (!res.ok) {
-  alert(data.message);
-  return;
-}
+       
     });
 
     // 🔥 Update badge instantly
