@@ -16,6 +16,8 @@ export async function POST(request) {
     const userData = await verifyToken(token);
     const { productId, action } = await request.json();
 
+    const cleanProductId = productId.toString(); // 🔥 always string
+
     const client = await clientPromise;
     const db = client.db();
     const users = db.collection("users");
@@ -24,7 +26,7 @@ export async function POST(request) {
       await users.updateOne(
         {
           _id: new ObjectId(userData.sub),
-          "cart.productId": productId,
+          "cart.productId": cleanProductId,
         },
         {
           $inc: { "cart.$.quantity": 1 },
@@ -33,20 +35,27 @@ export async function POST(request) {
     }
 
     if (action === "decrease") {
+      // First decrease quantity
       await users.updateOne(
         {
           _id: new ObjectId(userData.sub),
-          "cart.productId": productId,
+          "cart.productId": cleanProductId,
         },
         {
           $inc: { "cart.$.quantity": -1 },
         }
       );
 
+      // Then remove if quantity <= 0
       await users.updateOne(
         { _id: new ObjectId(userData.sub) },
         {
-          $pull: { cart: { productId, quantity: { $lte: 0 } } },
+          $pull: {
+            cart: {
+              productId: cleanProductId,
+              quantity: { $lte: 0 },
+            },
+          },
         }
       );
     }
@@ -54,7 +63,9 @@ export async function POST(request) {
     return NextResponse.json({ message: "Cart updated" });
 
   } catch (error) {
-    return NextResponse.json({ message: "Error updating cart" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Error updating cart" },
+      { status: 500 }
+    );
   }
 }
-
