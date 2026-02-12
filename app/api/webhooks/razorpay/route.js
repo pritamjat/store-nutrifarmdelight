@@ -41,12 +41,26 @@ export async function POST(request) {
     { $set: { status: "paid" } }
   );
 
-  // 🔥 2️⃣ Deduct stock
+   // 🔥 2️⃣ Deduct stock safely (atomic protection)
   for (const item of order.items) {
-    await products.updateOne(
-      { _id: new ObjectId(item.productId) },
-      { $inc: { stock: -item.quantity } }
+    const result = await products.updateOne(
+      {
+        _id: new ObjectId(item.productId),
+        stock: { $gte: item.quantity },
+      },
+      {
+        $inc: { stock: -item.quantity },
+      }
     );
+
+    if (result.modifiedCount === 0) {
+      await orders.updateOne(
+        { _id: order._id },
+        { $set: { status: "failed_stock" } }
+      );
+
+      return NextResponse.json({ status: "stock insufficient" });
+    }
   }
 
   // 🔥 3️⃣ Clear cart
