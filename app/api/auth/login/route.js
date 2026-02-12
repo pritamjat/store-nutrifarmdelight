@@ -15,9 +15,13 @@ export async function POST(request) {
     const users = db.collection('users');
 
     const user = await users.findOne({ email: email.toLowerCase() });
-    if (!user) {
-      return NextResponse.json({ message: 'Invalid credentials.' }, { status: 401 });
-    }
+    if (!user.isVerified) {
+  return NextResponse.json(
+    { message: "Please verify your email before logging in." },
+    { status: 403 }
+  );
+}
+
 
     const isValidPassword = await verifyPassword(password, user.password);
     if (!isValidPassword) {
