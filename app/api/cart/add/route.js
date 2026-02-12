@@ -30,7 +30,7 @@ export async function POST(request) {
     const users = db.collection("users");
     const products = db.collection("products");
 
-    // 🔥 Check stock
+    // ✅ Validate stock
     const dbProduct = await products.findOne({
       _id: new ObjectId(productId),
     });
@@ -42,8 +42,17 @@ export async function POST(request) {
       );
     }
 
+    // ✅ Make sure user ID matches DB
+    if (!ObjectId.isValid(userData.sub)) {
+      return NextResponse.json(
+        { message: "Invalid user ID" },
+        { status: 400 }
+      );
+    }
+
     const userId = new ObjectId(userData.sub);
 
+    // 🔥 IMPORTANT: Ensure user exists
     const user = await users.findOne({ _id: userId });
 
     if (!user) {
@@ -53,7 +62,7 @@ export async function POST(request) {
       );
     }
 
-    // Ensure cart exists
+    // 🔥 Ensure cart exists
     if (!user.cart) {
       await users.updateOne(
         { _id: userId },
@@ -61,11 +70,15 @@ export async function POST(request) {
       );
     }
 
-    const existingItem = user.cart?.find(
+    // 🔥 Re-fetch updated user (important)
+    const updatedUser = await users.findOne({ _id: userId });
+
+    const existingItem = updatedUser.cart?.find(
       (item) => item.productId === productId
     );
 
     if (existingItem) {
+      // Increase quantity
       await users.updateOne(
         {
           _id: userId,
@@ -76,6 +89,7 @@ export async function POST(request) {
         }
       );
     } else {
+      // Add new item
       await users.updateOne(
         { _id: userId },
         {
