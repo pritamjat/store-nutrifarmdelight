@@ -57,17 +57,45 @@ export default function CartPage() {
 }
   
 async function handleCheckout() {
-  const res = await fetch("/api/orders/create", {
+  const res = await fetch("/api/payment/create-order", {
     method: "POST",
   });
 
-  if (res.ok) {
-    alert("Order placed successfully!");
-    fetchCart(); // clear cart UI
-  } else {
-    alert("Error placing order");
-  }
+  const data = await res.json();
+
+  const options = {
+    key: data.key,
+    amount: data.razorpayOrder.amount,
+    currency: "INR",
+    name: "NutriFarm",
+    description: "Order Payment",
+    order_id: data.razorpayOrder.id,
+    handler: async function (response) {
+      await fetch("/api/payment/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...response,
+          dbOrderId: data.dbOrderId,
+        }),
+      });
+
+      alert("Payment Successful!");
+      window.location.href = "/orders";
+    },
+    prefill: {
+      name: "Customer",
+      email: "customer@email.com",
+    },
+    theme: {
+      color: "#3399cc",
+    },
+  };
+
+  const rzp = new window.Razorpay(options);
+  rzp.open();
 }
+
 
 
 
