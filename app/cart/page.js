@@ -66,10 +66,26 @@ export default function CartPage() {
 }
   
 async function handleCheckout() {
+
+  // 🔥 Basic validation before payment
+  if (
+    !address.fullName ||
+    !address.phone ||
+    !address.line1 ||
+    !address.city ||
+    !address.state ||
+    !address.pincode
+  ) {
+    alert("Please fill complete delivery address");
+    return;
+  }
+
   const res = await fetch("/api/payment/create-order", {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ address }), // 🔥 ADD THIS
   });
-
+  
   const data = await res.json();
 
   const options = {
