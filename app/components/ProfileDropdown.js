@@ -43,7 +43,9 @@ export default function ProfileDropdown({ name }) {
             zIndex: 1000,
           }}
         >
-          <div style={itemStyle}>My Orders</div>
+          <div style={itemStyle} onClick={() => router.push("/orders")}>
+            My Orders
+             </div>
           <div style={itemStyle} onClick={() => router.push("/dashboard")}>
             Dashboard
           </div>
