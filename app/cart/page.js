@@ -55,6 +55,19 @@ export default function CartPage() {
   await fetchCart();
   router.refresh(); // 👈 THIS updates navbar badge
 }
+  
+async function handleCheckout() {
+  const res = await fetch("/api/orders/create", {
+    method: "POST",
+  });
+
+  if (res.ok) {
+    alert("Order placed successfully!");
+    fetchCart(); // clear cart UI
+  } else {
+    alert("Error placing order");
+  }
+}
 
 
 
