@@ -16,40 +16,59 @@ export async function POST(request) {
     const userData = await verifyToken(token);
     const { product } = await request.json();
 
-    const productId = product.productId.toString(); // 🔥 FORCE STRING
+    if (!product || !product.productId) {
+      return NextResponse.json(
+        { message: "Invalid product" },
+        { status: 400 }
+      );
+    }
 
-   
+    const productId = product.productId.toString();
 
     const client = await clientPromise;
     const db = client.db();
     const users = db.collection("users");
-     //fetch product to update out of stock or not 
     const products = db.collection("products");
 
+    // 🔥 Check stock
     const dbProduct = await products.findOne({
       _id: new ObjectId(productId),
-});
+    });
 
     if (!dbProduct || dbProduct.stock <= 0) {
-     return NextResponse.json(
-    { message: "Out of stock" },
-    { status: 400 }
-  );
-}
+      return NextResponse.json(
+        { message: "Out of stock" },
+        { status: 400 }
+      );
+    }
 
-    const user = await users.findOne({
-      _id: new ObjectId(userData.sub),
-    });
+    const userId = new ObjectId(userData.sub);
+
+    const user = await users.findOne({ _id: userId });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    // Ensure cart exists
+    if (!user.cart) {
+      await users.updateOne(
+        { _id: userId },
+        { $set: { cart: [] } }
+      );
+    }
 
     const existingItem = user.cart?.find(
       (item) => item.productId === productId
     );
 
     if (existingItem) {
-      // Increase quantity
       await users.updateOne(
         {
-          _id: new ObjectId(userData.sub),
+          _id: userId,
           "cart.productId": productId,
         },
         {
@@ -57,9 +76,8 @@ export async function POST(request) {
         }
       );
     } else {
-      // Add new item
       await users.updateOne(
-        { _id: new ObjectId(userData.sub) },
+        { _id: userId },
         {
           $push: {
             cart: {
@@ -76,6 +94,10 @@ export async function POST(request) {
     return NextResponse.json({ message: "Cart updated" });
 
   } catch (error) {
-    return NextResponse.json({ message: "Error adding to cart" }, { status: 500 });
+    console.error("ADD CART ERROR:", error);
+    return NextResponse.json(
+      { message: "Error adding to cart" },
+      { status: 500 }
+    );
   }
 }
