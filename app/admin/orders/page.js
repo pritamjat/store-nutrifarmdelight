@@ -53,7 +53,11 @@ export default async function AdminOrdersPage() {
             </div>
           ))}
 
-          <AdminOrderActions orderId={order._id.toString()} />
+          <AdminOrderActions 
+            orderId={order._id.toString()} 
+            currentStatus={order.status}
+            />
+
         </div>
       ))}
     </div>
