@@ -16,6 +16,8 @@ export async function POST(request) {
     const userData = await verifyToken(token);
     const { product } = await request.json();
 
+    const productId = product.productId.toString(); // 🔥 FORCE STRING
+
     const client = await clientPromise;
     const db = client.db();
     const users = db.collection("users");
@@ -25,7 +27,7 @@ export async function POST(request) {
     });
 
     const existingItem = user.cart?.find(
-      (item) => item.productId === product.productId
+      (item) => item.productId === productId
     );
 
     if (existingItem) {
@@ -33,7 +35,7 @@ export async function POST(request) {
       await users.updateOne(
         {
           _id: new ObjectId(userData.sub),
-          "cart.productId": product.productId,
+          "cart.productId": productId,
         },
         {
           $inc: { "cart.$.quantity": 1 },
@@ -46,7 +48,7 @@ export async function POST(request) {
         {
           $push: {
             cart: {
-              productId: product.productId,
+              productId: productId,
               name: product.name,
               price: product.price,
               quantity: 1,
@@ -57,6 +59,7 @@ export async function POST(request) {
     }
 
     return NextResponse.json({ message: "Cart updated" });
+
   } catch (error) {
     return NextResponse.json({ message: "Error adding to cart" }, { status: 500 });
   }
