@@ -23,7 +23,9 @@ export async function POST(request) {
     await users.updateOne(
       { _id: new ObjectId(userData.sub) },
       {
-        $pull: { cart: { productId } },
+        $pull: {
+          cart: { productId: productId.toString() }, // 🔥 force string match
+        },
       }
     );
 
@@ -33,4 +35,3 @@ export async function POST(request) {
     return NextResponse.json({ message: "Error removing item" }, { status: 500 });
   }
 }
-
