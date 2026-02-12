@@ -22,9 +22,14 @@ export default function ProductList() {
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({
-    productId: product._id,
+    productId: product._id
 }),
+        const data = await res.json();
 
+if (!res.ok) {
+  alert(data.message);
+  return;
+}
     });
 
     // 🔥 Update badge instantly
