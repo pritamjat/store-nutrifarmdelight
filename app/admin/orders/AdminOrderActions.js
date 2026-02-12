@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function AdminOrderActions({ orderId }) {
+export default function AdminOrderActions({ orderId, currentStatus }) {
   const [loading, setLoading] = useState(false);
   const [tracking, setTracking] = useState("");
 
@@ -22,33 +22,61 @@ export default function AdminOrderActions({ orderId }) {
     window.location.reload();
   }
 
+  const nextActions = {
+    paid: "packed",
+    packed: "shipped",
+    shipped: "delivered",
+    delivered: null,
+  };
+
+  const nextStatus = nextActions[currentStatus];
+
   return (
-    <div style={{ marginTop: "10px" }}>
-      <button onClick={() => updateStatus("packed")} disabled={loading}>
-        Mark Packed
-      </button>
+    <div style={{ marginTop: "15px" }}>
+      <p>
+        <strong>Current Status:</strong> {currentStatus}
+      </p>
 
-      <div style={{ marginTop: "8px" }}>
-        <input
-          type="text"
-          placeholder="Tracking Number"
-          value={tracking}
-          onChange={(e) => setTracking(e.target.value)}
-          style={{ marginRight: "8px" }}
-        />
-
-        <button onClick={() => updateStatus("shipped")} disabled={loading}>
-          Mark Shipped
+      {nextStatus === "packed" && (
+        <button onClick={() => updateStatus("packed")} disabled={loading}>
+          Mark Packed
         </button>
-      </div>
+      )}
 
-      <button
-        onClick={() => updateStatus("delivered")}
-        disabled={loading}
-        style={{ marginTop: "8px" }}
-      >
-        Mark Delivered
-      </button>
+      {nextStatus === "shipped" && (
+        <div style={{ marginTop: "10px" }}>
+          <input
+            type="text"
+            placeholder="Tracking Number"
+            value={tracking}
+            onChange={(e) => setTracking(e.target.value)}
+            style={{ marginRight: "8px" }}
+          />
+
+          <button
+            onClick={() => updateStatus("shipped")}
+            disabled={loading || !tracking}
+          >
+            Mark Shipped
+          </button>
+        </div>
+      )}
+
+      {nextStatus === "delivered" && (
+        <button
+          onClick={() => updateStatus("delivered")}
+          disabled={loading}
+          style={{ marginTop: "10px" }}
+        >
+          Mark Delivered
+        </button>
+      )}
+
+      {currentStatus === "delivered" && (
+        <p style={{ marginTop: "10px", color: "green" }}>
+          Order Completed
+        </p>
+      )}
     </div>
   );
 }
