@@ -91,6 +91,20 @@ export default function CartPage() {
 
       <hr />
       <h3>Total: ₹{total}</h3>
+        <button
+  onClick={handleCheckout}
+  style={{
+    marginTop: "20px",
+    padding: "10px 20px",
+    background: "black",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+  }}
+>
+  Checkout
+</button>
+
     </div>
   );
 }
