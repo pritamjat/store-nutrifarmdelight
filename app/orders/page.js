@@ -51,6 +51,14 @@ export default async function OrdersPage() {
           <p>
             <strong>Status:</strong> {order.status}
           </p>
+          
+           {order.trackingNumber && (
+                 <p>
+                   <strong>Tracking:</strong> {order.trackingNumber}
+                  </p>
+        )}
+
+          
 
           <p>
             <strong>Date:</strong>{" "}
