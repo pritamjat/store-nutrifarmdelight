@@ -30,17 +30,12 @@ export default function ProductList() {
         }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        alert(data.message || "Failed to add to cart");
         setLoadingId(null);
         return;
       }
 
-      // 🔥 Only increase badge if backend succeeded
       setCartCount(cartCount + 1);
-
       setAddedId(product._id);
 
       setTimeout(() => {
@@ -48,7 +43,7 @@ export default function ProductList() {
       }, 1500);
 
     } catch (error) {
-      alert("Something went wrong");
+      console.error("Add to cart failed");
     } finally {
       setLoadingId(null);
     }
@@ -68,12 +63,26 @@ export default function ProductList() {
 
             <p>₹{product.price}</p>
 
-            <button
-              onClick={() => handleAdd(product)}
-              disabled={loadingId === product._id}
-            >
-              {loadingId === product._id ? "Adding..." : "Add to Cart"}
-            </button>
+            {product.stock <= 0 ? (
+              <button
+                disabled
+                style={{
+                  background: "#ccc",
+                  cursor: "not-allowed",
+                  padding: "8px 12px",
+                  border: "none",
+                }}
+              >
+                Out of Stock
+              </button>
+            ) : (
+              <button
+                onClick={() => handleAdd(product)}
+                disabled={loadingId === product._id}
+              >
+                {loadingId === product._id ? "Adding..." : "Add to Cart"}
+              </button>
+            )}
 
             {addedId === product._id && (
               <p style={{ color: "green", marginTop: "5px" }}>
