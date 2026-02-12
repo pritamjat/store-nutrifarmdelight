@@ -20,31 +20,41 @@ export async function POST(request) {
     const event = JSON.parse(rawBody);
 
     if (event.event === "payment.captured") {
-      const razorpayOrderId = event.payload.payment.entity.order_id;
+  const razorpayOrderId = event.payload.payment.entity.order_id;
 
-      const client = await clientPromise;
-      const db = client.db();
-      const orders = db.collection("orders");
-      const users = db.collection("users");
+  const client = await clientPromise;
+  const db = client.db();
 
-      const order = await orders.findOne({ razorpayOrderId });
+  const orders = db.collection("orders");
+  const users = db.collection("users");
+  const products = db.collection("products"); // 🔥 ADD THIS
 
-      if (!order || order.status === "paid") {
-        return NextResponse.json({ status: "already processed" });
-      }
+  const order = await orders.findOne({ razorpayOrderId });
 
-      // 🔥 Update order status
-      await orders.updateOne(
-        { _id: order._id },
-        { $set: { status: "paid" } }
-      );
+  if (!order || order.status === "paid") {
+    return NextResponse.json({ status: "already processed" });
+  }
 
-      // 🔥 Clear cart
-      await users.updateOne(
-        { _id: new ObjectId(order.userId) },
-        { $set: { cart: [] } }
-      );
-    }
+  // 🔥 1️⃣ Update order status
+  await orders.updateOne(
+    { _id: order._id },
+    { $set: { status: "paid" } }
+  );
+
+  // 🔥 2️⃣ Deduct stock
+  for (const item of order.items) {
+    await products.updateOne(
+      { _id: new ObjectId(item.productId) },
+      { $inc: { stock: -item.quantity } }
+    );
+  }
+
+  // 🔥 3️⃣ Clear cart
+  await users.updateOne(
+    { _id: new ObjectId(order.userId) },
+    { $set: { cart: [] } }
+  );
+}
 
     return NextResponse.json({ status: "ok" });
 
