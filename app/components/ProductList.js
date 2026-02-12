@@ -20,7 +20,7 @@ export default function ProductList() {
     await fetch("/api/cart/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include"
+      credentials: "include",
       body: JSON.stringify({
      product: {
     productId: product._id,
