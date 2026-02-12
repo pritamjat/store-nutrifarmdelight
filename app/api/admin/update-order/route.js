@@ -19,7 +19,18 @@ export async function POST(request) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    const { orderId, status } = await request.json();
+    const { orderId, status, trackingNumber } = await request.json();
+
+const updateData = { status };
+
+if (status === "shipped" && trackingNumber) {
+  updateData.trackingNumber = trackingNumber;
+}
+
+await db.collection("orders").updateOne(
+  { _id: new ObjectId(orderId) },
+  { $set: updateData }
+);
 
     const client = await clientPromise;
     const db = client.db();
