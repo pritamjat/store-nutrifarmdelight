@@ -10,10 +10,21 @@ export async function POST(request) {
     const token = cookieStore.get("auth_token")?.value;
 
     if (!token) {
+      console.log("No token found");
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const userData = await verifyToken(token);
+    console.log("Token sub:", userData.sub);
+
+    if (!ObjectId.isValid(userData.sub)) {
+      console.log("Invalid ObjectId format");
+      return NextResponse.json(
+        { message: "Invalid user ID" },
+        { status: 400 }
+      );
+    }
+
     const { product } = await request.json();
 
     if (!product || !product.productId) {
@@ -30,7 +41,28 @@ export async function POST(request) {
     const users = db.collection("users");
     const products = db.collection("products");
 
-    // ✅ Validate stock
+    const userId = new ObjectId(userData.sub);
+
+    const user = await users.findOne({ _id: userId });
+
+    console.log("Mongo user found:", user ? user._id : null);
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    // Ensure cart exists
+    if (!user.cart) {
+      await users.updateOne(
+        { _id: userId },
+        { $set: { cart: [] } }
+      );
+    }
+
+    // Check stock
     const dbProduct = await products.findOne({
       _id: new ObjectId(productId),
     });
@@ -42,44 +74,14 @@ export async function POST(request) {
       );
     }
 
-    // ✅ Make sure user ID matches DB
-    if (!ObjectId.isValid(userData.sub)) {
-      return NextResponse.json(
-        { message: "Invalid user ID" },
-        { status: 400 }
-      );
-    }
-
-    const userId = new ObjectId(userData.sub);
-
-    // 🔥 IMPORTANT: Ensure user exists
-    const user = await users.findOne({ _id: userId });
-
-    if (!user) {
-      return NextResponse.json(
-        { message: "User not found" },
-        { status: 404 }
-      );
-    }
-
-    // 🔥 Ensure cart exists
-    if (!user.cart) {
-      await users.updateOne(
-        { _id: userId },
-        { $set: { cart: [] } }
-      );
-    }
-
-    // 🔥 Re-fetch updated user (important)
-    const updatedUser = await users.findOne({ _id: userId });
-
-    const existingItem = updatedUser.cart?.find(
+    const existingItem = user.cart?.find(
       (item) => item.productId === productId
     );
 
+    let result;
+
     if (existingItem) {
-      // Increase quantity
-      await users.updateOne(
+      result = await users.updateOne(
         {
           _id: userId,
           "cart.productId": productId,
@@ -89,8 +91,7 @@ export async function POST(request) {
         }
       );
     } else {
-      // Add new item
-      await users.updateOne(
+      result = await users.updateOne(
         { _id: userId },
         {
           $push: {
@@ -105,6 +106,9 @@ export async function POST(request) {
       );
     }
 
+    console.log("Matched:", result.matchedCount);
+    console.log("Modified:", result.modifiedCount);
+
     return NextResponse.json({ message: "Cart updated" });
 
   } catch (error) {
@@ -115,3 +119,4 @@ export async function POST(request) {
     );
   }
 }
+
