@@ -49,6 +49,9 @@ export default function ProfileDropdown({ name }) {
           <div style={itemStyle} onClick={() => router.push("/dashboard")}>
             Dashboard
           </div>
+             <Link href="/profile/address">
+            My Address
+             </Link> 
           <hr />
           <div
             style={{ ...itemStyle, color: "red" }}
