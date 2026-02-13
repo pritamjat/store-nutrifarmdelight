@@ -31,7 +31,6 @@ export default async function ProductPage({ params }) {
 
       <h3>₹{product.price}</h3>
 
-      <p>Stock: {product.stock}</p>
 
       <AddToCartButton product={product} />
     </div>
