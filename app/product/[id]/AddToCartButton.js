@@ -31,7 +31,7 @@ export default function AddToCartButton({ product }) {
           padding: "10px 20px",
           background: "green",
           color: "white",
-          border: "none",
+          border-radius: "7px",
           cursor: "pointer",
         }}
       >
