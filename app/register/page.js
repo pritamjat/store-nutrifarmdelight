@@ -165,7 +165,7 @@ const styles = `
   .register-success {
     font-size: 0.82rem;
     color: #3a7d44;
-    background: rgba(58,125,68,0.06);
+    background: rgba(46, 255, 28, 0.62);
     border: 1px solid rgba(58,125,68,0.2);
     padding: 0.65rem 0.9rem;
   }
