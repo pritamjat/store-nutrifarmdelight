@@ -21,7 +21,6 @@ export default async function HomePage() {
 
       <section className="hero">
         <h1>Fresh Organic Products Delivered to Your Doorstep</h1>
-        <p>Flat 30% OFF on first order</p>
       </section>
 
       <ProductList />
