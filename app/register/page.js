@@ -156,8 +156,8 @@ const styles = `
   /* Messages */
   .register-error {
     font-size: 0.82rem;
-    color: var(--rust);
-    background: rgba(184,92,56,0.06);
+    color: var(--white);
+    background: rgba(46, 255, 28, 0.62);
     border: 1px solid rgba(184,92,56,0.2);
     padding: 0.65rem 0.9rem;
   }
@@ -254,7 +254,7 @@ export default function RegisterPage() {
       setError(data.message || 'Unable to register.');
       return;
     }
-    setSuccess('Account created! You can login now.');
+    setSuccess('Check Your Email Inbox To Verify Your Email Before Logging In.');
     setFormData({ name: '', email: '', password: '' });
   }
 
