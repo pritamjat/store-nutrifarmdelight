@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AddressForm from "@/app/components/AddressForm";
+import AddressForm from "./AddressForm";
 
 export default function AddressPage() {
   const [address, setAddress] = useState(null);
