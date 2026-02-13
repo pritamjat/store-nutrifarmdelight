@@ -185,8 +185,8 @@ export default async function RootLayout({ children }) {
               <Link href="/">
                 <span className="logo-n">N</span>
                 <span className="logo-u">u</span>
-                <span className="logo-r">r</span>
-                <span className="logo-t">t</span>
+                <span className="logo-r">t</span>
+                <span className="logo-t">r</span>
                 <span className="logo-i">i</span>
                 <span className="logo-f">f</span>
                 <span className="logo-a">a</span>
