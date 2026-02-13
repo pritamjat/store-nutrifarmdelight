@@ -56,7 +56,33 @@ export default function ProductList() {
       <div className="grid">
         {products.map((product) => (
           <div key={product._id} className="product-card">
+          {/* 🔥 Product Image */}
+  {product.image && (
+    <img
+      src={product.image}
+      alt={product.name}
+      style={{
+        width: "100%",
+        height: "200px",
+        objectFit: "cover",
+        borderRadius: "8px",
+        marginBottom: "10px",
+      }}
+    />
+  )}
 
+  <Link href={`/product/${product._id}`}>
+    <h3>{product.name}</h3>
+  </Link>
+
+  {/* 🔥 Description */}
+  {product.description && (
+    <p style={{ fontSize: "14px", color: "#666" }}>
+      {product.description}
+    </p>
+  )}
+
+  <p style={{ fontWeight: "bold" }}>₹{product.price}</p>
             <Link href={`/product/${product._id}`}>
               <h3>{product.name}</h3>
             </Link>
