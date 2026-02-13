@@ -1,48 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCart } from "@/app/context/CartContext";
 
 export default function AddToCartButton({ product }) {
-  const [added, setAdded] = useState(false);
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const { cartCount, setCartCount } = useCart();
 
   async function handleAdd() {
-    await fetch("/api/cart/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ product }),
-    });
+    try {
+      setLoading(true);
 
-    router.refresh(); // update navbar badge
+      const res = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          productId: product._id,
+        }),
+      });
 
-    setAdded(true);
+      if (!res.ok) return;
 
-    setTimeout(() => {
-      setAdded(false);
-    }, 1500);
+      setCartCount(cartCount + 1);
+
+    } catch (error) {
+      console.error("Add to cart failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (product.stock <= 0) {
+    return (
+      <button disabled style={{ background: "#ccc", cursor: "not-allowed" }}>
+        Out of Stock
+      </button>
+    );
   }
 
   return (
-    <div style={{ marginTop: "20px" }}>
-      <button
-        onClick={handleAdd}
-        style={{
-          padding: "10px 20px",
-          background: "green",
-          color: "white",
-          border: "none",
-          cursor: "pointer",
-        }}
-      >
-        Add to Cart
-      </button>
-
-      {added && (
-        <p style={{ color: "green", marginTop: "8px" }}>
-          ✓ Added to cart
-        </p>
-      )}
-    </div>
+    <button onClick={handleAdd} disabled={loading}>
+      {loading ? "Adding..." : "Add to Cart"}
+    </button>
   );
 }
