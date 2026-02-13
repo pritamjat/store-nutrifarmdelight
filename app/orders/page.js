@@ -227,7 +227,7 @@ export default async function OrdersPage() {
 
             {order.trackingNumber && (
               <div className="op-tracking">
-                <span className="op-tracking-label">Tracking:</span>
+                <span className="op-tracking-label">Tracking ID:</span>
                 {order.trackingNumber}
               </div>
             )}
