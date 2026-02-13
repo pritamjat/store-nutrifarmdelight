@@ -83,11 +83,9 @@ export default function ProductList() {
   )}
 
   <p style={{ fontWeight: "bold" }}>₹{product.price}</p>
-            <Link href={`/product/${product._id}`}>
-              <h3>{product.name}</h3>
-            </Link>
+            
 
-            <p>₹{product.price}</p>
+           
 
             {product.stock <= 0 ? (
               <button
