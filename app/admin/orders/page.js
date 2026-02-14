@@ -63,27 +63,50 @@ export default async function AdminOrdersPage({ searchParams }) {
       {orders.length === 0 && <p>No orders found.</p>}
 
       {orders.map((order) => (
-        <div
-          key={order._id.toString()}
-          style={{
-            border: "1px solid #ccc",
-            padding: "20px",
-            marginBottom: "20px",
-          }}
-        >
-          <p><strong>Order ID:</strong> {order._id.toString()}</p>
-          <p><strong>Status:</strong> {order.status}</p>
-          <p><strong>Total:</strong> ₹{order.total}</p>
+  <div
+    key={order._id}
+    style={{
+      border: "1px solid #e5e5e5",
+      padding: "20px",
+      marginBottom: "20px",
+      borderRadius: "8px",
+      background: "#fff",
+    }}
+  >
 
-          {order.trackingNumber && (
-            <p><strong>Tracking:</strong> {order.trackingNumber}</p>
-          )}
+    <p><strong>Order ID:</strong> {order._id}</p>
+    <p><strong>Status:</strong> {order.status}</p>
+    <p><strong>Total:</strong> ₹{order.total}</p>
+    <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
 
-          {order.items.map((item, i) => (
-            <div key={i}>
-              {item.name} — ₹{item.price} × {item.quantity}
-            </div>
-          ))}
+    {/* 🔥 DELIVERY ADDRESS */}
+    {order.address && (
+      <div style={{ marginTop: "15px", padding: "15px", background: "#f9f9f9" }}>
+        <p style={{ fontWeight: "600", marginBottom: "8px" }}>
+          Delivery Address
+        </p>
+        <p>{order.address.fullName}</p>
+        <p>{order.address.phone}</p>
+        <p>{order.address.line1}</p>
+        <p>
+          {order.address.city}, {order.address.state}
+        </p>
+        <p>{order.address.pincode}</p>
+      </div>
+    )}
+
+    {/* 🔥 ITEMS */}
+    <div style={{ marginTop: "15px" }}>
+      <p style={{ fontWeight: "600" }}>Items:</p>
+      {order.items.map((item, index) => (
+        <div key={index} style={{ fontSize: "14px", marginTop: "5px" }}>
+          {item.name} × {item.quantity} — ₹{item.price}
+        </div>
+      ))}
+    </div>
+
+  </div>
+))}
 
           <AdminOrderActions
             orderId={order._id.toString()}
