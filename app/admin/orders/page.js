@@ -113,7 +113,7 @@ export default async function AdminOrdersPage({ searchParams }) {
             currentStatus={order.status}
           />
         </div>
-      ))}
+      
     </div>
   );
 }
