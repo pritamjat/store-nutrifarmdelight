@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
+import { useRouter } from "next/navigation";
+
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap');
@@ -167,6 +169,8 @@ export default function ProductList() {
   const [addedId, setAddedId] = useState(null);
   const [loadingId, setLoadingId] = useState(null);
   const { cartCount, setCartCount } = useCart();
+  const router = useRouter();
+
 
   useEffect(() => {
     fetch("/api/products")
@@ -174,32 +178,46 @@ export default function ProductList() {
       .then((data) => setProducts(data.products || []));
   }, []);
 
-  async function handleAdd(product) {
-    try {
-      setLoadingId(product._id);
-      const res = await fetch("/api/cart/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          productId: product._id,
-        }),
-      });
-      if (!res.ok) {
-        setLoadingId(null);
-        return;
-      }
-      setCartCount(cartCount + 1);
-      setAddedId(product._id);
-      setTimeout(() => {
-        setAddedId(null);
-      }, 1500);
-    } catch (error) {
-      console.error("Add to cart failed");
-    } finally {
-      setLoadingId(null);
+async function handleAdd(product) {
+  try {
+    setLoadingId(product._id);
+
+    const res = await fetch("/api/cart/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        productId: product._id,
+      }),
+    });
+
+    const data = await res.json();
+
+    // 🔥 If not logged in → redirect
+    if (res.status === 401) {
+      router.push("/login");
+      return;
     }
+
+    if (!res.ok) {
+      return;
+    }
+
+    setCartCount(cartCount + 1);
+    setAddedId(product._id);
+
+    setTimeout(() => {
+      setAddedId(null);
+    }, 1500);
+
+  } catch (error) {
+    console.error("Add to cart failed");
+  } finally {
+    setLoadingId(null);
   }
+}
+
+
 
   return (
     <>
