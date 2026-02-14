@@ -32,7 +32,7 @@ const styles = `
 
   /* HERO */
   .home-hero {
-    background: var(--white);
+    background: #6fac85;
     border-bottom: 1px solid var(--border);
     padding: 4rem 2rem;
     text-align: center;
