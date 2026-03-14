@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
+  const [date, setDate] = useState("");
 
-  async function fetchOrders() {
-    const res = await fetch("/api/admin/update-order");
+  async function fetchOrders(selectedDate = "") {
+    const res = await fetch(`/api/admin/update-order?date=${selectedDate}`);
     const data = await res.json();
     setOrders(data.orders || []);
   }
@@ -16,16 +17,16 @@ export default function AdminOrdersPage() {
     fetchOrders();
   }, []);
 
-  // 🔍 Filter by Order ID
+  // 🔍 Filter by order id
   const filteredOrders = orders.filter((order) =>
-    order._id.toLowerCase().includes(search.toLowerCase())
+    order._id.toString().toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
       <h1 style={{ marginBottom: "20px" }}>Admin Orders</h1>
 
-      {/* SEARCH BAR */}
+      {/* SEARCH */}
       <input
         type="text"
         placeholder="Search by Order ID..."
@@ -34,10 +35,23 @@ export default function AdminOrdersPage() {
         style={{
           padding: "10px",
           width: "100%",
-          marginBottom: "30px",
+          marginBottom: "20px",
           border: "1px solid #ddd",
         }}
       />
+
+      {/* DATE FILTER */}
+      <div style={{ marginBottom: "30px" }}>
+        <label>Select Date: </label>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => {
+            setDate(e.target.value);
+            fetchOrders(e.target.value);
+          }}
+        />
+      </div>
 
       {filteredOrders.map((order) => (
         <div
@@ -66,22 +80,22 @@ export default function AdminOrdersPage() {
 
           <p><strong>Total:</strong> ₹{order.total}</p>
 
-          {/* 📅 DATE */}
           <p>
             <strong>Date:</strong>{" "}
             {new Date(order.createdAt).toLocaleString()}
           </p>
 
-          {/* ADDRESS */}
+          {/* DELIVERY ADDRESS */}
           {order.address && (
             <div
               style={{
                 marginTop: "15px",
                 padding: "15px",
-                background: "#f8f8f8",
+                background: "#f9f9f9",
               }}
             >
               <p style={{ fontWeight: "600" }}>Delivery Address</p>
+
               <p>{order.address.fullName}</p>
               <p>{order.address.phone}</p>
               <p>{order.address.line1}</p>
