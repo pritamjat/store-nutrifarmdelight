@@ -27,63 +27,27 @@ export default function AdminPage() {
         flexDirection: "column",
         gap: "8px",
       }}>
-        <li>
-          <a href="/admin/add-product" style={{
-            display: "block",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            background: "#f7f7f5",
-            color: "#111",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: "500",
-            border: "0.5px solid #e5e5e5",
-            transition: "background 0.15s",
-          }}
-            onMouseOver={e => e.currentTarget.style.background = "#efefec"}
-            onMouseOut={e => e.currentTarget.style.background = "#f7f7f5"}
-          >
-            Add Product
-          </a>
-        </li>
-        <li>
-          <a href="/admin/products" style={{
-            display: "block",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            background: "#f7f7f5",
-            color: "#111",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: "500",
-            border: "0.5px solid #e5e5e5",
-            transition: "background 0.15s",
-          }}
-            onMouseOver={e => e.currentTarget.style.background = "#efefec"}
-            onMouseOut={e => e.currentTarget.style.background = "#f7f7f5"}
-          >
-            Manage Products
-          </a>
-        </li>
-        <li>
-          <a href="/admin/orders" style={{
-            display: "block",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            background: "#f7f7f5",
-            color: "#111",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: "500",
-            border: "0.5px solid #e5e5e5",
-            transition: "background 0.15s",
-          }}
-            onMouseOver={e => e.currentTarget.style.background = "#efefec"}
-            onMouseOut={e => e.currentTarget.style.background = "#f7f7f5"}
-          >
-            Orders
-          </a>
-        </li>
+        {[
+          { href: "/admin/add-product", label: "Add Product" },
+          { href: "/admin/products", label: "Manage Products" },
+          { href: "/admin/orders", label: "Orders" },
+        ].map(({ href, label }) => (
+          <li key={href}>
+            <a href={href} style={{
+              display: "block",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              background: "#f7f7f5",
+              color: "#111",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: "500",
+              border: "0.5px solid #e5e5e5",
+            }}>
+              {label}
+            </a>
+          </li>
+        ))}
       </ul>
     </div>
   );
