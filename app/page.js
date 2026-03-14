@@ -82,6 +82,26 @@ const styles = `
     padding: 0.3rem 0.85rem;
     white-space: nowrap;
   }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .home-hero {
+      padding: 3rem 1.5rem;
+    }
+
+    .home-products {
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .home-products-header {
+      gap: 0.5rem;
+    }
+
+    .home-products-header-tag {
+      font-size: 0.68rem;
+      padding: 0.25rem 0.7rem;
+    }
+  }
 `;
 
 export default async function HomePage() {

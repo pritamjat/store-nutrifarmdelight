@@ -140,6 +140,39 @@ const styles = `
     border-color: var(--orange-hover);
     color: var(--white);
   }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .navbar {
+      height: auto;
+      padding: 0.6rem 1rem;
+      flex-wrap: wrap;
+      row-gap: 0.75rem;
+    }
+
+    .logo a {
+      font-size: 1.1rem;
+    }
+
+    .search {
+      order: 3;
+      flex: 1 1 100%;
+      max-width: 100%;
+      margin: 0;
+    }
+
+    .nav-right {
+      order: 2;
+      margin-left: 0;
+      margin-left: auto;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.7rem;
+    }
+  }
 `;
 
 export default async function RootLayout({ children }) {
