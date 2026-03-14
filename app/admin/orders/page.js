@@ -1,38 +1,47 @@
-import clientPromise from "@/lib/mongodb";
-import { ObjectId } from "mongodb";
-import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/auth";
+"use client";
 
-export default async function AdminOrdersPage() {
-  const cookieStore = cookies();
-  const token = cookieStore.get("auth_token")?.value;
+import { useEffect, useState } from "react";
 
-  if (!token) {
-    return <div>Unauthorized</div>;
+export default function AdminOrdersPage() {
+  const [orders, setOrders] = useState([]);
+  const [search, setSearch] = useState("");
+
+  async function fetchOrders() {
+    const res = await fetch("/api/admin/update-order");
+    const data = await res.json();
+    setOrders(data.orders || []);
   }
 
-  const user = await verifyToken(token);
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-  if (user.role !== "admin") {
-    return <div>Access Denied</div>;
-  }
-
-  const client = await clientPromise;
-  const db = client.db();
-  const orders = db.collection("orders");
-
-  const allOrders = await orders
-    .find({})
-    .sort({ createdAt: -1 })
-    .toArray();
+  // 🔍 Filter by Order ID
+  const filteredOrders = orders.filter((order) =>
+    order._id.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Admin Orders</h1>
+    <div style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
+      <h1 style={{ marginBottom: "20px" }}>Admin Orders</h1>
 
-      {allOrders.map((order) => (
+      {/* SEARCH BAR */}
+      <input
+        type="text"
+        placeholder="Search by Order ID..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{
+          padding: "10px",
+          width: "100%",
+          marginBottom: "30px",
+          border: "1px solid #ddd",
+        }}
+      />
+
+      {filteredOrders.map((order) => (
         <div
-          key={order._id.toString()}
+          key={order._id}
           style={{
             border: "1px solid #ddd",
             padding: "20px",
@@ -41,7 +50,8 @@ export default async function AdminOrdersPage() {
             background: "#fff",
           }}
         >
-          <p><strong>Order ID:</strong> {order._id.toString()}</p>
+          <p><strong>Order ID:</strong> {order._id}</p>
+
           <p>
             <strong>Status:</strong>{" "}
             <span
@@ -53,24 +63,25 @@ export default async function AdminOrdersPage() {
               {order.status}
             </span>
           </p>
+
           <p><strong>Total:</strong> ₹{order.total}</p>
+
+          {/* 📅 DATE */}
           <p>
             <strong>Date:</strong>{" "}
             {new Date(order.createdAt).toLocaleString()}
           </p>
 
-          {/* DELIVERY ADDRESS */}
+          {/* ADDRESS */}
           {order.address && (
             <div
               style={{
                 marginTop: "15px",
                 padding: "15px",
-                background: "#f9f9f9",
+                background: "#f8f8f8",
               }}
             >
-              <p style={{ fontWeight: "600", marginBottom: "8px" }}>
-                Delivery Address
-              </p>
+              <p style={{ fontWeight: "600" }}>Delivery Address</p>
               <p>{order.address.fullName}</p>
               <p>{order.address.phone}</p>
               <p>{order.address.line1}</p>
@@ -84,8 +95,9 @@ export default async function AdminOrdersPage() {
           {/* ITEMS */}
           <div style={{ marginTop: "15px" }}>
             <p style={{ fontWeight: "600" }}>Items:</p>
-            {order.items.map((item, index) => (
-              <div key={index} style={{ fontSize: "14px", marginTop: "5px" }}>
+
+            {order.items.map((item, i) => (
+              <div key={i}>
                 {item.name} × {item.quantity} — ₹{item.price}
               </div>
             ))}
